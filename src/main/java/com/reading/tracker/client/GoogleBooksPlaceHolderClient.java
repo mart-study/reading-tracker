@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.reading.tracker.dto.ItemDto;
 import com.reading.tracker.dto.SearchBookResultDto;
 
-
 @PropertySource("classpath:google-books.properties")
 @FeignClient(value = "gbplaceholder", url = "${base-url}")
 public interface GoogleBooksPlaceHolderClient {

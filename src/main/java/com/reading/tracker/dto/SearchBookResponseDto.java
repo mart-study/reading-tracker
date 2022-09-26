@@ -10,8 +10,8 @@ public class SearchBookResponseDto implements Serializable {
 	private String id;
 	private String title;
 	private List<String> authors;
-	private String publisher;
-	private String publishedDate;
+	private String ISBN;
+	private String imageLink;
 	
 	public String getId() {
 		return id;
@@ -34,21 +34,21 @@ public class SearchBookResponseDto implements Serializable {
 	public void setAuthors(List<String> authors) {
 		this.authors = authors;
 	}
-	public String getPublisher() {
-		return publisher;
+	public String getISBN() {
+		return ISBN;
 	}
-	public void setPublisher(String publisher) {
-		this.publisher = publisher;
+	public void setISBN(String iSBN) {
+		ISBN = iSBN;
 	}
-	public String getPublishedDate() {
-		return publishedDate;
+	public String getImageLink() {
+		return imageLink;
 	}
-	public void setPublishedDate(String publishedDate) {
-		this.publishedDate = publishedDate;
+	public void setImageLink(String imageLink) {
+		this.imageLink = imageLink;
 	}
 	@Override
 	public int hashCode() {
-		return Objects.hash(authors, id, publishedDate, publisher, title);
+		return Objects.hash(ISBN, authors, id, imageLink, title);
 	}
 	
 	@Override
@@ -60,14 +60,14 @@ public class SearchBookResponseDto implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		SearchBookResponseDto other = (SearchBookResponseDto) obj;
-		return Objects.equals(authors, other.authors) && Objects.equals(id, other.id)
-				&& Objects.equals(publishedDate, other.publishedDate) && Objects.equals(publisher, other.publisher)
+		return Objects.equals(ISBN, other.ISBN) && Objects.equals(authors, other.authors)
+				&& Objects.equals(id, other.id) && Objects.equals(imageLink, other.imageLink)
 				&& Objects.equals(title, other.title);
 	}
 	
 	@Override
 	public String toString() {
-		return "SearchBookResponseDto [id=" + id + ", title=" + title + ", authors=" + authors + ", publisher="
-				+ publisher + ", publishedDate=" + publishedDate + "]";
+		return "SearchBookResponseDto [id=" + id + ", title=" + title + ", authors=" + authors + ", ISBN=" + ISBN
+				+ ", imageLink=" + imageLink + "]";
 	}
 }
