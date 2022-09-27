@@ -7,6 +7,7 @@ import java.util.Objects;
 public class BookDetailDto implements Serializable {
 
 	private static final long serialVersionUID = 2030282476434276000L;
+	private String googleId;
 	private String title;
 	private String authors;
 	private String publisher;
@@ -21,6 +22,12 @@ public class BookDetailDto implements Serializable {
 	private String previewLink;
 	private String imageLink;
 	
+	public String getGoogleId() {
+		return googleId;
+	}
+	public void setGoogleId(String googleId) {
+		this.googleId = googleId;
+	}
 	public String getTitle() {
 		return title;
 	}

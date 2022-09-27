@@ -1,4 +1,4 @@
-package com.reading.tracker.controller.rest;
+package com.reading.tracker.controller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,13 +11,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.reading.tracker.properties.GoogleBookProperties;
+import com.reading.tracker.service.BookService;
+import com.reading.tracker.service.KeySearchService;
 import com.reading.tracker.client.GoogleBooksPlaceHolderClient;
 import com.reading.tracker.dto.BookDetailDto;
+import com.reading.tracker.dto.BookProgressDto;
 import com.reading.tracker.dto.ItemDto;
+import com.reading.tracker.dto.PageRequestDto;
 import com.reading.tracker.dto.SearchBookResponseDto;
 import com.reading.tracker.dto.SearchBookResultDto;
 
@@ -34,6 +41,12 @@ public class BookController {
 	
 	@Autowired
 	private ModelMapper modelMapper;
+	
+	@Autowired
+	private BookService bookService;
+	
+	@Autowired
+	private KeySearchService keySearchService;
 	
 	/**
 	 * Search book by title and/or author name
@@ -73,6 +86,7 @@ public class BookController {
 			result.add(dto);
 		});
 		logger.info("Search books with title: " + title + " and author: " + author);
+		keySearchService.addKeySearch(title, author);
 		
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
@@ -120,5 +134,49 @@ public class BookController {
 		}
 		logger.info("Get book by id from google apis: " + id);
 		return new ResponseEntity<>(book, HttpStatus.OK);
+	}
+	
+	/**
+	 * Get reading list using pagination
+	 * @param pageNo
+	 * @param pageSize
+	 * @param sortBy
+	 * @param sortDir
+	 * @return
+	 */
+	@GetMapping("/reading-list")
+	public ResponseEntity<List<BookProgressDto>> getReadingList(@RequestParam(value = "pageNo", required=false) int pageNo,
+			@RequestParam(value = "pageSize", required=false) int pageSize,
+			@RequestParam(value = "sortBy", required=false) String sortBy,
+			@RequestParam(value = "sortDir", required=false) String sortDir) {
+		
+		PageRequestDto pageRequest = new PageRequestDto(pageNo, pageSize, sortBy, sortDir);
+		List<BookProgressDto> result = bookService.getReadingList(pageRequest);
+		logger.info("Get reading list");
+		return new ResponseEntity<>(result, HttpStatus.OK);
+	}
+	
+	/**
+	 * Add book to reading list
+	 * @param bookDetailDto
+	 * @return
+	 */
+	@PostMapping("/reading-list")
+	public ResponseEntity<Boolean> addToReadingList(@RequestBody BookDetailDto bookDetailDto) {
+		boolean result = bookService.addBookToReadingList(bookDetailDto);
+		logger.info("Add book to reading list: " + bookDetailDto.getGoogleId());
+		return new ResponseEntity<>(result, HttpStatus.CREATED);
+	}
+	
+	/**
+	 * Remove book from reading list
+	 * @param bookId
+	 * @return
+	 */
+	@PutMapping("/reading-list/{bookId}")
+	public ResponseEntity<Boolean> removeFromReadingList(@PathVariable String bookId) {
+		boolean result = bookService.removeBookFromReadingList(bookId);
+		logger.info("Remove book to reading list: " + bookId);
+		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
 }

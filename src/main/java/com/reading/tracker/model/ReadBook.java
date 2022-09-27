@@ -69,7 +69,7 @@ public class ReadBook {
 		return updatedDate;
 	}
 	public void setUpdatedDate(Date updatedDate) {
-		this.updatedDate = updatedDate;
+		this.updatedDate = new Date();
 	}
 	public String getCreatedBy() {
 		return createdBy;
@@ -81,7 +81,7 @@ public class ReadBook {
 		return createdDate;
 	}
 	public void setCreatedDate(Date createdDate) {
-		this.createdDate = createdDate;
+		this.createdDate = new Date();
 	}
 	@Override
 	public int hashCode() {

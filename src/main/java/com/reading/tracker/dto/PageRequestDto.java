@@ -9,6 +9,18 @@ public class PageRequestDto {
 	private String sortBy;
 	private String sortDir;
 	
+	public PageRequestDto() {
+		
+	}
+	
+	public PageRequestDto(int pageNo, int pageSize, String sortBy, String sortDir) {
+		super();
+		this.pageNo = pageNo;
+		this.pageSize = pageSize;
+		this.sortBy = sortBy;
+		this.sortDir = sortDir;
+	}
+
 	public int getPageNo() {
 		return pageNo;
 	}

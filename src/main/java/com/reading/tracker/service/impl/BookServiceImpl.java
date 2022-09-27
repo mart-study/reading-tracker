@@ -45,8 +45,9 @@ public class BookServiceImpl implements BookService {
 
 	@Override
 	public boolean addBookToReadingList(BookDetailDto bookDetailDto) {
-		// TODO Auto-generated method stub
-		return false;
+		ReadingBook readingBook = modelMapper.map(bookDetailDto, ReadingBook.class);
+		readingBookRepository.save(readingBook);
+		return true;
 	}
 
 	@Override
