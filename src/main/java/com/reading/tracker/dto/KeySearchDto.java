@@ -2,7 +2,7 @@ package com.reading.tracker.dto;
 
 import java.util.Objects;
 
-public class KeySearchDto {
+public class KeySearchDto extends PageRequestDto {
 
 	private String title;
 	private String author;

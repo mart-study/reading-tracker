@@ -3,17 +3,21 @@ package com.reading.tracker.controller.rest;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.reading.tracker.properties.GoogleBookProperties;
 import com.reading.tracker.client.GoogleBooksPlaceHolderClient;
+import com.reading.tracker.dto.BookDetailDto;
+import com.reading.tracker.dto.ItemDto;
 import com.reading.tracker.dto.SearchBookResponseDto;
 import com.reading.tracker.dto.SearchBookResultDto;
 
@@ -27,6 +31,9 @@ public class BookController {
 	
 	@Autowired
 	private GoogleBooksPlaceHolderClient googleBooksPlaceHolderClient;
+	
+	@Autowired
+	private ModelMapper modelMapper;
 	
 	/**
 	 * Search book by title and/or author name
@@ -75,10 +82,43 @@ public class BookController {
 	 * @param id
 	 * @return
 	 */
-//	@GetMapping("/{id}")
-//	public ResponseEntity<BookDto> getBook(@PathVariable String id) {
-//		ResponseEntity<ItemDto> response = googleBooksPlaceHolderClient.getBookById(id);
-//		logger.info("Get book by id from google apis: " + id);
-//		return new ResponseEntity<>(response.getBody(), HttpStatus.OK);
-//	}
+	@GetMapping("/{id}")
+	public ResponseEntity<BookDetailDto> getBook(@PathVariable String id) {
+		ResponseEntity<ItemDto> response = googleBooksPlaceHolderClient.getBookById(id);
+	
+		BookDetailDto book = new BookDetailDto();
+		if (response.getBody().getVolumeInfo() != null) {
+			book = modelMapper.map(response.getBody().getVolumeInfo(), BookDetailDto.class);
+			StringBuilder AUTHORS = new StringBuilder("");
+			if (response.getBody().getVolumeInfo().getAuthors() != null) {
+				response.getBody().getVolumeInfo().getAuthors().stream().forEach(author -> {
+					AUTHORS.append(author).append(", ");
+				});
+			}
+			
+			String authors = AUTHORS.toString().trim();
+			if (!authors.isBlank() && authors.charAt(authors.length() - 1) == ',') {
+				authors = authors.substring(0, authors.length() - 1);
+			}
+			book.setAuthors(authors);
+			
+			StringBuilder ISBN = new StringBuilder("");
+			if (response.getBody().getVolumeInfo().getIndustryIdentifiers() != null) {
+				response.getBody().getVolumeInfo().getIndustryIdentifiers().stream().forEach(isbn -> {
+					ISBN.append(isbn.getType()).append(": ").append(isbn.getIdentifier()).append(", ");
+				});
+			}
+			
+			String isbn = ISBN.toString().trim();
+			if (!isbn.isBlank() && isbn.charAt(isbn.length() - 1) == ',') {
+				isbn = isbn.substring(0, isbn.length() - 1);
+			}
+			book.setISBN(isbn);
+			
+			String imageLink = response.getBody().getVolumeInfo().getImageLinks().getSmall().replace("http", "https");
+			book.setImageLink(imageLink);
+		}
+		logger.info("Get book by id from google apis: " + id);
+		return new ResponseEntity<>(book, HttpStatus.OK);
+	}
 }
