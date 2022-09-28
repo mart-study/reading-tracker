@@ -2,6 +2,8 @@ package com.reading.tracker.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +18,9 @@ import com.reading.tracker.dto.BookProgressDto;
 import com.reading.tracker.dto.IndustryIdentifierDto;
 import com.reading.tracker.dto.PageRequestDto;
 import com.reading.tracker.model.ReadingBook;
+import com.reading.tracker.model.RemovedBook;
 import com.reading.tracker.repository.ReadingBookRepository;
+import com.reading.tracker.repository.RemovedBookRepository;
 import com.reading.tracker.service.BookService;
 
 @Service
@@ -24,6 +28,9 @@ public class BookServiceImpl implements BookService {
 
 	@Autowired
 	private ReadingBookRepository readingBookRepository;
+	
+	@Autowired
+	private RemovedBookRepository removedBookRepository;
 	
 	@Autowired
 	private ModelMapper modelMapper;
@@ -53,8 +60,15 @@ public class BookServiceImpl implements BookService {
 
 	@Override
 	public boolean removeBookFromReadingList(String bookId) {
-		// TODO Auto-generated method stub
-		return false;
+		Optional<ReadingBook> readingBook = readingBookRepository.findById(UUID.fromString(bookId));
+		if (readingBook.isPresent()) {
+			RemovedBook removedBook = modelMapper.map(readingBook, RemovedBook.class);
+			removedBookRepository.save(removedBook);
+			
+			readingBookRepository.delete(readingBook.get());
+		}
+		
+		return true;
 	}
 
 	@Override

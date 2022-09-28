@@ -9,9 +9,9 @@ public class BookProgressDto implements Serializable {
 	private static final long serialVersionUID = 5179305429969958666L;
 
 	private UUID id;
-	private String thumbnailLink;
+	private String imageLink;
 	private String title;
-	private String author;
+	private String authors;
 	private String description;
 	private int pageCount;
 	private int currentPage;
@@ -22,11 +22,11 @@ public class BookProgressDto implements Serializable {
 	public void setId(UUID id) {
 		this.id = id;
 	}
-	public String getThumbnailLink() {
-		return thumbnailLink;
+	public String getImageLink() {
+		return imageLink;
 	}
-	public void setThumbnailLink(String thumbnailLink) {
-		this.thumbnailLink = thumbnailLink;
+	public void setImageLink(String imageLink) {
+		this.imageLink = imageLink;
 	}
 	public String getTitle() {
 		return title;
@@ -34,11 +34,11 @@ public class BookProgressDto implements Serializable {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	public String getAuthor() {
-		return author;
+	public String getAuthors() {
+		return authors;
 	}
-	public void setAuthor(String author) {
-		this.author = author;
+	public void setAuthors(String authors) {
+		this.authors = authors;
 	}
 	public String getDescription() {
 		return description;
@@ -61,9 +61,10 @@ public class BookProgressDto implements Serializable {
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
+	
 	@Override
 	public int hashCode() {
-		return Objects.hash(author, currentPage, description, id, pageCount, thumbnailLink, title);
+		return Objects.hash(authors, currentPage, description, id, imageLink, pageCount, title);
 	}
 	
 	@Override
@@ -75,16 +76,15 @@ public class BookProgressDto implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		BookProgressDto other = (BookProgressDto) obj;
-		return Objects.equals(author, other.author) && currentPage == other.currentPage
+		return Objects.equals(authors, other.authors) && currentPage == other.currentPage
 				&& Objects.equals(description, other.description) && Objects.equals(id, other.id)
-				&& pageCount == other.pageCount && Objects.equals(thumbnailLink, other.thumbnailLink)
+				&& Objects.equals(imageLink, other.imageLink) && pageCount == other.pageCount
 				&& Objects.equals(title, other.title);
 	}
 	
 	@Override
 	public String toString() {
-		return "UpdateBookProgressDto [id=" + id + ", thumbnailLink=" + thumbnailLink + ", title=" + title + ", author="
-				+ author + ", description=" + description + ", pageCount=" + pageCount + ", currentPage=" + currentPage
-				+ "]";
+		return "BookProgressDto [id=" + id + ", imageLink=" + imageLink + ", title=" + title + ", authors=" + authors
+				+ ", description=" + description + ", pageCount=" + pageCount + ", currentPage=" + currentPage + "]";
 	}
 }
