@@ -58,8 +58,8 @@ public class BookController {
 	@GetMapping("/search")
 	public ResponseEntity<SearchBookResponseDto> searchBook(@RequestParam(value = "title", required=true) String title, 
 			@RequestParam(value = "author", required=false) String author, 
-			@RequestParam(value = "startIndex", required=false) int startIndex, 
-			@RequestParam(value = "maxResults", required=false) int maxResults) {
+			@RequestParam(value = "startIndex", defaultValue = "0", required=false) int startIndex, 
+			@RequestParam(value = "maxResults", defaultValue = "5", required=false) int maxResults) {
 		
 		ResponseEntity<SearchBookResultDto> response = 
 				googleBooksPlaceHolderClient.searchBookByTitleAndAuthor(title.concat("+inauthor:").concat(author), 0,
@@ -71,47 +71,27 @@ public class BookController {
 			dto.setBookId(item.getId());
 			dto.setTitle(item.getVolumeInfo().getTitle());
 			
-			StringBuilder AUTHORS = new StringBuilder("");
-			if (item.getVolumeInfo().getAuthors() != null) {
-				item.getVolumeInfo().getAuthors().stream().forEach(ar -> {
-					AUTHORS.append(ar).append(", ");
-				});
-			}
-			
-			String authors = AUTHORS.toString().trim();
-			if (!authors.isBlank() && authors.charAt(authors.length() - 1) == ',') {
-				authors = authors.substring(0, authors.length() - 1);
-			}
+			String authors = bookService.appendAuthorsName(item.getVolumeInfo().getAuthors());
 			dto.setAuthors(authors);
 			
-			StringBuilder ISBN = new StringBuilder("");
-			if (item.getVolumeInfo().getIndustryIdentifiers() != null) {
-				item.getVolumeInfo().getIndustryIdentifiers().stream().forEach(isbn -> {
-					ISBN.append(isbn.getType()).append(": ").append(isbn.getIdentifier()).append(", ");
-				});
-			}
-			
-			String isbn = ISBN.toString().trim();
-			if (!isbn.isBlank() && isbn.charAt(isbn.length() - 1) == ',') {
-				isbn = isbn.substring(0, isbn.length() - 1);
-			}
+			String isbn = bookService.appendISBN(item.getVolumeInfo().getIndustryIdentifiers());
 			dto.setISBN(isbn);
 			
 			String thumbnailLink = item.getVolumeInfo().getImageLinks().getThumbnail().replace("http", "https");
 			dto.setImageLink(thumbnailLink);
 			result.add(dto);
 		});
-		logger.info("Search books with title: " + title + " and author: " + author);
 		keySearchService.addKeySearch(title, author);
 		
 		SearchBookResponseDto searchResponse = new SearchBookResponseDto(result, 
 				startIndex, maxResults, response.getBody().getTotalItems());
+		logger.info("Search books with title: " + title + " and author: " + author);
 		
 		return new ResponseEntity<>(searchResponse, HttpStatus.OK);
 	}
 	
 	/**
-	 * Get book details using id from search result
+	 * Get book detail using id from search result
 	 * @param id
 	 * @return
 	 */
@@ -122,41 +102,25 @@ public class BookController {
 		BookDetailDto book = new BookDetailDto();
 		if (response.getBody().getVolumeInfo() != null) {
 			book = modelMapper.map(response.getBody().getVolumeInfo(), BookDetailDto.class);
-			StringBuilder AUTHORS = new StringBuilder("");
-			if (response.getBody().getVolumeInfo().getAuthors() != null) {
-				response.getBody().getVolumeInfo().getAuthors().stream().forEach(author -> {
-					AUTHORS.append(author).append(", ");
-				});
-			}
-			
-			String authors = AUTHORS.toString().trim();
-			if (!authors.isBlank() && authors.charAt(authors.length() - 1) == ',') {
-				authors = authors.substring(0, authors.length() - 1);
-			}
+			book.setGoogleId(response.getBody().getId());
+			String authors = bookService.appendAuthorsName(response.getBody().getVolumeInfo().getAuthors());
 			book.setAuthors(authors);
 			
-			StringBuilder ISBN = new StringBuilder("");
-			if (response.getBody().getVolumeInfo().getIndustryIdentifiers() != null) {
-				response.getBody().getVolumeInfo().getIndustryIdentifiers().stream().forEach(isbn -> {
-					ISBN.append(isbn.getType()).append(": ").append(isbn.getIdentifier()).append(", ");
-				});
-			}
-			
-			String isbn = ISBN.toString().trim();
-			if (!isbn.isBlank() && isbn.charAt(isbn.length() - 1) == ',') {
-				isbn = isbn.substring(0, isbn.length() - 1);
-			}
+			String isbn = bookService.appendISBN(response.getBody().getVolumeInfo().getIndustryIdentifiers());
 			book.setISBN(isbn);
+			
+			String previewLink = response.getBody().getVolumeInfo().getPreviewLink().replace("http", "https");
+			book.setPreviewLink(previewLink);
 			
 			String imageLink = response.getBody().getVolumeInfo().getImageLinks().getSmall().replace("http", "https");
 			book.setImageLink(imageLink);
 		}
-		logger.info("Get book by id from google apis: " + id);
+		logger.info("Get book detail by id from google apis: " + id);
 		return new ResponseEntity<>(book, HttpStatus.OK);
 	}
 	
 	/**
-	 * Get reading list using pagination
+	 * Get reading list
 	 * @param pageNo
 	 * @param pageSize
 	 * @param sortBy
@@ -164,10 +128,10 @@ public class BookController {
 	 * @return
 	 */
 	@GetMapping("/reading-list")
-	public ResponseEntity<List<BookProgressDto>> getReadingList(@RequestParam(value = "pageNo", required=false) int pageNo,
-			@RequestParam(value = "pageSize", required=false) int pageSize,
-			@RequestParam(value = "sortBy", required=false) String sortBy,
-			@RequestParam(value = "sortDir", required=false) String sortDir) {
+	public ResponseEntity<List<BookProgressDto>> getReadingList(@RequestParam(value = "pageNo", defaultValue = "0", required=false) int pageNo,
+			@RequestParam(value = "pageSize", defaultValue = "5", required=false) int pageSize,
+			@RequestParam(value = "sortBy", defaultValue = "updatedDate", required=false) String sortBy,
+			@RequestParam(value = "sortDir", defaultValue = "DESC", required=false) String sortDir) {
 		
 		PageRequestDto pageRequest = new PageRequestDto(pageNo, pageSize, sortBy, sortDir);
 		List<BookProgressDto> result = bookService.getReadingList(pageRequest);

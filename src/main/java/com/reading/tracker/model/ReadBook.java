@@ -2,9 +2,18 @@ package com.reading.tracker.model;
 
 import java.util.Date;
 import java.util.Objects;
+import java.util.UUID;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
+
+@MappedSuperclass
 public class ReadBook {
 
+	@Id
+    @GeneratedValue
+	private UUID id;
 	private String googleId;
 	private String thumbnailLink;
 	private String title;
@@ -17,6 +26,12 @@ public class ReadBook {
 	private String createdBy;
 	private Date createdDate;
 	
+	public UUID getId() {
+		return id;
+	}
+	public void setId(UUID id) {
+		this.id = id;
+	}
 	public String getGoogleId() {
 		return googleId;
 	}
@@ -69,7 +84,7 @@ public class ReadBook {
 		return updatedDate;
 	}
 	public void setUpdatedDate(Date updatedDate) {
-		this.updatedDate = new Date();
+		this.updatedDate = updatedDate;
 	}
 	public String getCreatedBy() {
 		return createdBy;
@@ -81,11 +96,13 @@ public class ReadBook {
 		return createdDate;
 	}
 	public void setCreatedDate(Date createdDate) {
-		this.createdDate = new Date();
+		this.createdDate = createdDate;
 	}
+	
 	@Override
 	public int hashCode() {
-		return Objects.hash(author, currentPage, description, googleId, pageCount, thumbnailLink, title);
+		return Objects.hash(author, createdBy, createdDate, currentPage, description, googleId, id, pageCount,
+				thumbnailLink, title, updatedBy, updatedDate);
 	}
 	
 	@Override
@@ -97,19 +114,19 @@ public class ReadBook {
 		if (getClass() != obj.getClass())
 			return false;
 		ReadBook other = (ReadBook) obj;
-		return Objects.equals(author, other.author) && currentPage == other.currentPage
+		return Objects.equals(author, other.author) && Objects.equals(createdBy, other.createdBy)
+				&& Objects.equals(createdDate, other.createdDate) && currentPage == other.currentPage
 				&& Objects.equals(description, other.description) && Objects.equals(googleId, other.googleId)
-				&& pageCount == other.pageCount && Objects.equals(thumbnailLink, other.thumbnailLink)
-				&& Objects.equals(title, other.title);
+				&& Objects.equals(id, other.id) && pageCount == other.pageCount
+				&& Objects.equals(thumbnailLink, other.thumbnailLink) && Objects.equals(title, other.title)
+				&& Objects.equals(updatedBy, other.updatedBy) && Objects.equals(updatedDate, other.updatedDate);
 	}
 	
 	@Override
 	public String toString() {
-		return "ReadBook [googleId=" + googleId + ", thumbnailLink=" + thumbnailLink + ", title=" + title + ", author="
-				+ author + ", description=" + description + ", pageCount=" + pageCount + ", currentPage=" + currentPage
-				+ ", updatedBy=" + updatedBy + ", updatedDate=" + updatedDate + ", createdBy=" + createdBy
+		return "ReadBook [id=" + id + ", googleId=" + googleId + ", thumbnailLink=" + thumbnailLink + ", title=" + title
+				+ ", author=" + author + ", description=" + description + ", pageCount=" + pageCount + ", currentPage="
+				+ currentPage + ", updatedBy=" + updatedBy + ", updatedDate=" + updatedDate + ", createdBy=" + createdBy
 				+ ", createdDate=" + createdDate + "]";
 	}
-	
-	
 }

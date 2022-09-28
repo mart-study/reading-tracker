@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.reading.tracker.dto.BookDetailDto;
 import com.reading.tracker.dto.BookProgressDto;
+import com.reading.tracker.dto.IndustryIdentifierDto;
 import com.reading.tracker.dto.PageRequestDto;
 import com.reading.tracker.model.ReadingBook;
 import com.reading.tracker.repository.ReadingBookRepository;
@@ -54,6 +55,38 @@ public class BookServiceImpl implements BookService {
 	public boolean removeBookFromReadingList(String bookId) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public String appendAuthorsName(List<String> authors) {
+		StringBuilder AUTHORS = new StringBuilder("");
+		if (authors != null) {
+			authors.stream().forEach(author -> {
+				AUTHORS.append(author).append(", ");
+			});
+		}
+		
+		String result = AUTHORS.toString().trim();
+		if (!result.isBlank() && result.charAt(result.length() - 1) == ',') {
+			result = result.substring(0, result.length() - 1);
+		}
+		return result;
+	}
+
+	@Override
+	public String appendISBN(List<IndustryIdentifierDto> industryIdentifiers) {
+		StringBuilder ISBN = new StringBuilder("");
+		if (industryIdentifiers != null) {
+			industryIdentifiers.stream().forEach(isbn -> {
+				ISBN.append(isbn.getType()).append(": ").append(isbn.getIdentifier()).append(", ");
+			});
+		}
+		
+		String isbn = ISBN.toString().trim();
+		if (!isbn.isBlank() && isbn.charAt(isbn.length() - 1) == ',') {
+			isbn = isbn.substring(0, isbn.length() - 1);
+		}
+		return isbn;
 	}
 
 }
