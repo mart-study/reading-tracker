@@ -30,24 +30,23 @@ public class KeySearchServiceImpl implements KeySearchService {
 		if (existingKeySearchTitle.isPresent()) {
 			keySearchTitle = existingKeySearchTitle.get();
 			count = keySearchTitle.getCount();
-			keySearchTitle.setCount(++count);
 		} else {
 			keySearchTitle.setKeyword(title);
-			keySearchTitle.setCount(count);
 		}
+		keySearchTitle.setCount(++count);
 		keySearchRepository.save(keySearchTitle);
 		
 		KeySearch keySearchAuthor = new KeySearch();
 		Optional<KeySearch> keySearchAuthorOpt = keySearchRepository.findById(author.toLowerCase().trim());
 		
+		count = 0;
 		if (keySearchAuthorOpt.isPresent()) {
 			keySearchAuthor = keySearchAuthorOpt.get();
 			count = keySearchAuthor.getCount();
-			keySearchAuthor.setCount(++count);
 		} else {
-			keySearchAuthor.setCount(count);
 			keySearchAuthor.setKeyword(author);
 		}
+		keySearchAuthor.setCount(++count);
 		keySearchRepository.save(keySearchAuthor);
 	}
 

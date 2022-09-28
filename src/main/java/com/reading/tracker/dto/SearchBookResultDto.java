@@ -9,7 +9,7 @@ public class SearchBookResultDto implements Serializable {
 	
 	private static final long serialVersionUID = -8395144110086804317L;
 	private String kind;
-	private String totalItems;
+	private int totalItems;
 	private List<ItemDto> items;
 	
 	public List<ItemDto> getItems() {
@@ -24,15 +24,16 @@ public class SearchBookResultDto implements Serializable {
 	public void setKind(String kind) {
 		this.kind = kind;
 	}
-	public String getTotalItems() {
+	public int getTotalItems() {
 		return totalItems;
 	}
-	public void setTotalItems(String totalItems) {
+	public void setTotalItems(int totalItems) {
 		this.totalItems = totalItems;
 	}
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
+	
 	@Override
 	public int hashCode() {
 		return Objects.hash(items, kind, totalItems);
@@ -47,8 +48,7 @@ public class SearchBookResultDto implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		SearchBookResultDto other = (SearchBookResultDto) obj;
-		return Objects.equals(items, other.items) && Objects.equals(kind, other.kind)
-				&& Objects.equals(totalItems, other.totalItems);
+		return Objects.equals(items, other.items) && Objects.equals(kind, other.kind) && totalItems == other.totalItems;
 	}
 	
 	@Override

@@ -26,6 +26,7 @@ import com.reading.tracker.dto.BookProgressDto;
 import com.reading.tracker.dto.ItemDto;
 import com.reading.tracker.dto.PageRequestDto;
 import com.reading.tracker.dto.SearchBookResponseDto;
+import com.reading.tracker.dto.GoogleBookResultDto;
 import com.reading.tracker.dto.SearchBookResultDto;
 
 @RestController
@@ -55,19 +56,34 @@ public class BookController {
 	 * @return
 	 */
 	@GetMapping("/search")
-	public ResponseEntity<List<SearchBookResponseDto>> searchBook(@RequestParam(value = "title", required=true) String title, 
-			@RequestParam(value = "author", required=false) String author) {
+	public ResponseEntity<SearchBookResponseDto> searchBook(@RequestParam(value = "title", required=true) String title, 
+			@RequestParam(value = "author", required=false) String author, 
+			@RequestParam(value = "startIndex", required=false) int startIndex, 
+			@RequestParam(value = "maxResults", required=false) int maxResults) {
 		
 		ResponseEntity<SearchBookResultDto> response = 
-				googleBooksPlaceHolderClient.searchBookByTitleAndAuthor(title.concat("+inauthor:").concat(author),
-						5, "newest", properties.getApiKey());
+				googleBooksPlaceHolderClient.searchBookByTitleAndAuthor(title.concat("+inauthor:").concat(author), 0,
+						5, "relevance", properties.getApiKey());
 		
-		List<SearchBookResponseDto> result = new ArrayList<>();
+		List<GoogleBookResultDto> result = new ArrayList<>();
 		response.getBody().getItems().stream().forEach(item -> {
-			SearchBookResponseDto dto = new SearchBookResponseDto();
-			dto.setId(item.getId());
+			GoogleBookResultDto dto = new GoogleBookResultDto();
+			dto.setBookId(item.getId());
 			dto.setTitle(item.getVolumeInfo().getTitle());
-			dto.setAuthors(item.getVolumeInfo().getAuthors());
+			
+			StringBuilder AUTHORS = new StringBuilder("");
+			if (item.getVolumeInfo().getAuthors() != null) {
+				item.getVolumeInfo().getAuthors().stream().forEach(ar -> {
+					AUTHORS.append(ar).append(", ");
+				});
+			}
+			
+			String authors = AUTHORS.toString().trim();
+			if (!authors.isBlank() && authors.charAt(authors.length() - 1) == ',') {
+				authors = authors.substring(0, authors.length() - 1);
+			}
+			dto.setAuthors(authors);
+			
 			StringBuilder ISBN = new StringBuilder("");
 			if (item.getVolumeInfo().getIndustryIdentifiers() != null) {
 				item.getVolumeInfo().getIndustryIdentifiers().stream().forEach(isbn -> {
@@ -77,7 +93,7 @@ public class BookController {
 			
 			String isbn = ISBN.toString().trim();
 			if (!isbn.isBlank() && isbn.charAt(isbn.length() - 1) == ',') {
-				isbn = isbn.substring(0, isbn.length() - 2);
+				isbn = isbn.substring(0, isbn.length() - 1);
 			}
 			dto.setISBN(isbn);
 			
@@ -88,7 +104,10 @@ public class BookController {
 		logger.info("Search books with title: " + title + " and author: " + author);
 		keySearchService.addKeySearch(title, author);
 		
-		return new ResponseEntity<>(result, HttpStatus.OK);
+		SearchBookResponseDto searchResponse = new SearchBookResponseDto(result, 
+				startIndex, maxResults, response.getBody().getTotalItems());
+		
+		return new ResponseEntity<>(searchResponse, HttpStatus.OK);
 	}
 	
 	/**
