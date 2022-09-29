@@ -15,6 +15,7 @@ public class BookProgressDto implements Serializable {
 	private String description;
 	private int pageCount;
 	private int currentPage;
+	private boolean completeStatus;
 	
 	public UUID getId() {
 		return id;
@@ -61,10 +62,16 @@ public class BookProgressDto implements Serializable {
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
+	public boolean isCompleteStatus() {
+		return completeStatus;
+	}
+	public void setCompleteStatus(boolean completeStatus) {
+		this.completeStatus = completeStatus;
+	}
 	
 	@Override
 	public int hashCode() {
-		return Objects.hash(authors, currentPage, description, id, imageLink, pageCount, title);
+		return Objects.hash(authors, completeStatus, currentPage, description, id, imageLink, pageCount, title);
 	}
 	
 	@Override
@@ -76,15 +83,17 @@ public class BookProgressDto implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		BookProgressDto other = (BookProgressDto) obj;
-		return Objects.equals(authors, other.authors) && currentPage == other.currentPage
-				&& Objects.equals(description, other.description) && Objects.equals(id, other.id)
-				&& Objects.equals(imageLink, other.imageLink) && pageCount == other.pageCount
-				&& Objects.equals(title, other.title);
+		return Objects.equals(authors, other.authors) && completeStatus == other.completeStatus
+				&& currentPage == other.currentPage && Objects.equals(description, other.description)
+				&& Objects.equals(id, other.id) && Objects.equals(imageLink, other.imageLink)
+				&& pageCount == other.pageCount && Objects.equals(title, other.title);
 	}
 	
 	@Override
 	public String toString() {
 		return "BookProgressDto [id=" + id + ", imageLink=" + imageLink + ", title=" + title + ", authors=" + authors
-				+ ", description=" + description + ", pageCount=" + pageCount + ", currentPage=" + currentPage + "]";
+				+ ", description=" + description + ", pageCount=" + pageCount + ", currentPage=" + currentPage
+				+ ", completeStatus=" + completeStatus + "]";
 	}
+	
 }

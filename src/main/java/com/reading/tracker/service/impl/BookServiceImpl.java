@@ -103,4 +103,21 @@ public class BookServiceImpl implements BookService {
 		return isbn;
 	}
 
+	@Override
+	public BookProgressDto updateReadProgress(BookProgressDto bookProgress) {
+		ReadingBook readingBook = modelMapper.map(bookProgress, ReadingBook.class);
+		
+		if (readingBook.isCompleteStatus() == false && readingBook.getCurrentPage() == readingBook.getPageCount()) {
+			readingBook.setCompleteStatus(true);
+		}
+		
+		if (readingBook.isCompleteStatus() && readingBook.getCurrentPage() != readingBook.getPageCount()) {
+			readingBook.setCurrentPage(readingBook.getPageCount());
+		}
+		
+		readingBook = readingBookRepository.save(readingBook);
+		bookProgress = modelMapper.map(readingBook, BookProgressDto.class);
+		return bookProgress;
+	}
+
 }

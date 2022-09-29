@@ -34,6 +34,7 @@ public class ReadBook {
 	private String description;
 	private int pageCount;
 	private int currentPage;
+	private boolean completeStatus;
 	
 	@LastModifiedBy
 	private String updatedBy;
@@ -111,6 +112,14 @@ public class ReadBook {
 		this.currentPage = currentPage;
 	}
 
+	public boolean isCompleteStatus() {
+		return completeStatus;
+	}
+
+	public void setCompleteStatus(boolean completeStatus) {
+		this.completeStatus = completeStatus;
+	}
+
 	public String getUpdatedBy() {
 		return updatedBy;
 	}
@@ -145,8 +154,8 @@ public class ReadBook {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(authors, createdBy, createdDate, currentPage, description, googleId, id, imageLink,
-				pageCount, title, updatedBy, updatedDate);
+		return Objects.hash(authors, completeStatus, createdBy, createdDate, currentPage, description, googleId, id,
+				imageLink, pageCount, title, updatedBy, updatedDate);
 	}
 
 	@Override
@@ -158,19 +167,21 @@ public class ReadBook {
 		if (getClass() != obj.getClass())
 			return false;
 		ReadBook other = (ReadBook) obj;
-		return Objects.equals(authors, other.authors) && Objects.equals(createdBy, other.createdBy)
-				&& Objects.equals(createdDate, other.createdDate) && currentPage == other.currentPage
-				&& Objects.equals(description, other.description) && Objects.equals(googleId, other.googleId)
-				&& Objects.equals(id, other.id) && Objects.equals(imageLink, other.imageLink)
-				&& pageCount == other.pageCount && Objects.equals(title, other.title)
-				&& Objects.equals(updatedBy, other.updatedBy) && Objects.equals(updatedDate, other.updatedDate);
+		return Objects.equals(authors, other.authors) && completeStatus == other.completeStatus
+				&& Objects.equals(createdBy, other.createdBy) && Objects.equals(createdDate, other.createdDate)
+				&& currentPage == other.currentPage && Objects.equals(description, other.description)
+				&& Objects.equals(googleId, other.googleId) && Objects.equals(id, other.id)
+				&& Objects.equals(imageLink, other.imageLink) && pageCount == other.pageCount
+				&& Objects.equals(title, other.title) && Objects.equals(updatedBy, other.updatedBy)
+				&& Objects.equals(updatedDate, other.updatedDate);
 	}
 
 	@Override
 	public String toString() {
 		return "ReadBook [id=" + id + ", googleId=" + googleId + ", imageLink=" + imageLink + ", title=" + title
 				+ ", authors=" + authors + ", description=" + description + ", pageCount=" + pageCount
-				+ ", currentPage=" + currentPage + ", updatedBy=" + updatedBy + ", updatedDate=" + updatedDate
-				+ ", createdBy=" + createdBy + ", createdDate=" + createdDate + "]";
+				+ ", currentPage=" + currentPage + ", completeStatus=" + completeStatus + ", updatedBy=" + updatedBy
+				+ ", updatedDate=" + updatedDate + ", createdBy=" + createdBy + ", createdDate=" + createdDate + "]";
 	}
+
 }

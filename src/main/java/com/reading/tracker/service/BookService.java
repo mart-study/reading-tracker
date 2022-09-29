@@ -14,4 +14,5 @@ public interface BookService {
 	boolean removeBookFromReadingList(String bookId);
 	String appendAuthorsName(List<String> authors);
 	String appendISBN(List<IndustryIdentifierDto> industryIdentifiers);
+	BookProgressDto updateReadProgress(BookProgressDto bookProgress);
 }

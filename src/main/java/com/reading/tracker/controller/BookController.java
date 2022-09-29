@@ -28,6 +28,8 @@ import com.reading.tracker.dto.PageRequestDto;
 import com.reading.tracker.dto.SearchBookResponseDto;
 import com.reading.tracker.dto.GoogleBookResultDto;
 import com.reading.tracker.dto.SearchBookResultDto;
+import com.reading.tracker.exception.BookNotFoundException;
+import com.reading.tracker.exception.PageUpdateException;
 
 @RestController
 public class BookController {
@@ -156,10 +158,33 @@ public class BookController {
 	 * @param bookId
 	 * @return
 	 */
-	@DeleteMapping("/reading-list/{bookId}")
+	@DeleteMapping("/book-detail/{bookId}")
 	public ResponseEntity<Boolean> removeFromReadingList(@PathVariable String bookId) {
 		boolean result = bookService.removeBookFromReadingList(bookId);
 		logger.info("Remove book from reading list: " + bookId);
 		return new ResponseEntity<>(result, HttpStatus.OK);
+	}
+	
+	@PostMapping("/book-detail/update")
+	public ResponseEntity<?> updateBookProgress(@RequestBody BookProgressDto bookProgressDto) {
+		if (bookProgressDto == null) {
+			throw new BookNotFoundException("Required book progress detail is not found.");
+		}
+		
+		if (bookProgressDto.getId() == null) {
+			throw new BookNotFoundException("Required book id is not found.");
+		}
+		
+		if (bookProgressDto.getCurrentPage() < 0) {
+			throw new PageUpdateException("Invalid required page number. Page number must be between 0 and page count.");
+		}
+		
+		if (bookProgressDto.getCurrentPage() > bookProgressDto.getPageCount()) {
+			throw new PageUpdateException("Invalid required page number. Page number must not exceed page count.");
+		}
+		
+		bookProgressDto = bookService.updateReadProgress(bookProgressDto);
+		
+		return new ResponseEntity<>(bookProgressDto, HttpStatus.OK);
 	}
 }
